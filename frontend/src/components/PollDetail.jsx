@@ -9,6 +9,8 @@ function PollDetail({ pollId, onBack, socket }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
+  const [pendingVote, setPendingVote] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const loadResults = useCallback(() => {
     axios
@@ -50,19 +52,36 @@ function PollDetail({ pollId, onBack, socket }) {
   }, [pollId, socket, loadResults]);
 
   const handleVote = (optionId) => {
+    // Armazena o voto pendente e mostra confirmação
+    setPendingVote(optionId);
+    setShowConfirmation(true);
+  };
+
+  const confirmVote = () => {
+    if (!pendingVote) return;
+
     axios
       .post(`${API_URL}/api/polls/${pollId}/vote`, {
-        optionId: optionId,
+        optionId: pendingVote,
       })
       .then(() => {
         // Recarrega resultados
         loadResults();
         setError(null);
+        setShowConfirmation(false);
+        setPendingVote(null);
       })
       .catch((err) => {
         console.error("Erro ao votar:", err);
         setError(err.response?.data?.message || "Erro ao registrar voto");
+        setShowConfirmation(false);
+        setPendingVote(null);
       });
+  };
+
+  const cancelVote = () => {
+    setShowConfirmation(false);
+    setPendingVote(null);
   };
 
   if (loading) {
@@ -175,6 +194,35 @@ function PollDetail({ pollId, onBack, socket }) {
           )}
         </div>
       </div>
+
+      {showConfirmation && pendingVote && (
+        <div className={styles.confirmationOverlay}>
+          <div className={styles.confirmationModal}>
+            <h3>Confirmar Voto</h3>
+            <p>
+              Tem certeza que deseja votar em:{" "}
+              <strong>
+                {poll.Options.find((opt) => opt.id === pendingVote)?.text}
+              </strong>
+              ?
+            </p>
+            <div className={styles.confirmationButtons}>
+              <button
+                className={styles.btnConfirm}
+                onClick={confirmVote}
+              >
+                Confirmar
+              </button>
+              <button
+                className={styles.btnCancel}
+                onClick={cancelVote}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

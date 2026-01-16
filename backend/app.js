@@ -79,6 +79,7 @@ app.get("/api/polls", async (req, res) => {
     const polls = await Poll.findAll({
       include: Option,
       raw: false,
+      order: [["id", "DESC"]],
     });
     res.json(polls);
   } catch (err) {
@@ -146,7 +147,7 @@ app.get("/api/polls/:id", async (req, res) => {
 app.put("/api/polls/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, startDate, endDate } = req.body;
+    const { title, startDate, endDate, options } = req.body;
 
     const poll = await Poll.findByPk(id);
     if (!poll) {
@@ -164,8 +165,23 @@ app.put("/api/polls/:id", async (req, res) => {
         .json({ message: "Data de início deve ser anterior à de término" });
     }
 
+    // Atualizar opções se fornecidas
+    if (options && Array.isArray(options) && options.length >= 3) {
+      // Deletar opções antigas
+      await Option.destroy({ where: { PollId: id } });
+
+      // Criar novas opções
+      const optionPromises = options.map((opt) =>
+        Option.create({ text: opt, PollId: id })
+      );
+      await Promise.all(optionPromises);
+    }
+
     await poll.save();
     const pollWithOptions = await Poll.findByPk(id, { include: Option });
+
+    // Emitir evento de atualização via WebSocket
+    io.emit("pollsUpdated");
 
     res.json({
       message: "Enquete atualizada com sucesso",
@@ -201,6 +217,9 @@ app.delete("/api/polls/:id", async (req, res) => {
 
     // Deleta enquete
     await poll.destroy();
+
+    // Emitir evento de atualização via WebSocket
+    io.emit("pollsUpdated");
 
     res.json({ message: "Enquete deletada com sucesso" });
   } catch (err) {
