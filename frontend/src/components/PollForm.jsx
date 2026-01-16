@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { pollAPI } from "../utils/pollAPI";
 import styles from "../styles/PollForm.module.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function PollForm({ pollId, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -32,10 +30,8 @@ function PollForm({ pollId, onSuccess, onCancel }) {
     const controller = new AbortController();
 
     if (pollId) {
-      axios
-        .get(`${API_URL}/api/polls/${pollId}`, {
-          signal: controller.signal,
-        })
+      pollAPI
+        .getById(pollId)
         .then((res) => {
           const poll = res.data;
           setFormData({
@@ -177,10 +173,10 @@ function PollForm({ pollId, onSuccess, onCancel }) {
     let request;
     if (pollId) {
       // Editar enquete
-      request = axios.put(`${API_URL}/api/polls/${pollId}`, payload);
+      request = pollAPI.update(pollId, payload);
     } else {
       // Criar nova enquete
-      request = axios.post(`${API_URL}/api/polls`, payload);
+      request = pollAPI.create(payload);
     }
 
     request

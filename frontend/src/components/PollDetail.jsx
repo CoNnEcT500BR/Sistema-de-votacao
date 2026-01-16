@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { pollAPI } from "../utils/pollAPI";
 import styles from "../styles/PollDetail.module.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function PollDetail({ pollId, onBack, socket }) {
   const [poll, setPoll] = useState(null);
@@ -13,8 +11,8 @@ function PollDetail({ pollId, onBack, socket }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const loadResults = useCallback(() => {
-    axios
-      .get(`${API_URL}/api/polls/${pollId}/results`)
+    pollAPI
+      .getResults(pollId)
       .then((res) => {
         setResults(res.data.results);
       })
@@ -23,8 +21,8 @@ function PollDetail({ pollId, onBack, socket }) {
 
   useEffect(() => {
     // Carregar detalhes da enquete e resultados
-    axios
-      .get(`${API_URL}/api/polls/${pollId}`)
+    pollAPI
+      .getById(pollId)
       .then((res) => {
         setPoll(res.data);
         setLoading(false);
@@ -60,10 +58,8 @@ function PollDetail({ pollId, onBack, socket }) {
   const confirmVote = () => {
     if (!pendingVote) return;
 
-    axios
-      .post(`${API_URL}/api/polls/${pollId}/vote`, {
-        optionId: pendingVote,
-      })
+    pollAPI
+      .vote(pollId, pendingVote)
       .then(() => {
         // Recarrega resultados
         loadResults();
