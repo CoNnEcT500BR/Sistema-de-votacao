@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "../styles/PollList.module.css";
+import ConfirmationModal from "./ConfirmationModal";
 
 function PollList({
   polls,
@@ -9,6 +10,9 @@ function PollList({
   onCreatePoll,
 }) {
   const [filterStatus, setFilterStatus] = useState("all");
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [pollToDelete, setPollToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Determina o status de uma enquete
   const getPollStatus = (poll) => {
@@ -54,6 +58,30 @@ function PollList({
         {statusInfo.label}
       </span>
     );
+  };
+
+  // Abre o modal de confirmação de exclusão
+  const handleDeleteClick = (e, pollId) => {
+    e.stopPropagation();
+    setPollToDelete(pollId);
+    setShowDeleteConfirmation(true);
+  };
+
+  // Confirma a exclusão
+  const handleConfirmDelete = () => {
+    if (pollToDelete) {
+      setIsDeleting(true);
+      onDeletePoll?.(pollToDelete);
+      setShowDeleteConfirmation(false);
+      setPollToDelete(null);
+      setIsDeleting(false);
+    }
+  };
+
+  // Cancela a exclusão
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setPollToDelete(null);
   };
 
   return (
@@ -159,16 +187,7 @@ function PollList({
                 </button>
                 <button
                   className={`${styles.actionBtn} ${styles.btnDelete}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (
-                      window.confirm(
-                        "Tem certeza que deseja deletar esta enquete?"
-                      )
-                    ) {
-                      onDeletePoll?.(poll.id);
-                    }
-                  }}
+                  onClick={(e) => handleDeleteClick(e, poll.id)}
                 >
                   Deletar
                 </button>
@@ -177,6 +196,20 @@ function PollList({
           ))
         )}
       </div>
+
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteConfirmation && (
+        <ConfirmationModal
+          title="Deletar Enquete"
+          message="Tem certeza que deseja deletar esta enquete? Esta ação não pode ser desfeita."
+          confirmText="Deletar"
+          cancelText="Cancelar"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          isLoading={isDeleting}
+          isDanger={true}
+        />
+      )}
     </div>
   );
 }
