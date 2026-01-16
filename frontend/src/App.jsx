@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import PollList from "./components/PollList";
@@ -21,7 +21,8 @@ function App() {
   const [error, setError] = useState(null);
 
   // Carregar enquetes
-  const loadPolls = () => {
+  const loadPolls = useCallback(() => {
+    setLoading(true);
     axios
       .get(`${API_URL}/api/polls`)
       .then((res) => {
@@ -34,20 +35,48 @@ function App() {
         setError("Erro ao carregar enquetes");
         setLoading(false);
       });
-  };
+  }, []);
 
   useEffect(() => {
-    loadPolls();
+    // Carrega enquetes na primeira renderização
+    let isMounted = true;
 
+    const fetchPolls = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${API_URL}/api/polls`);
+        if (isMounted) {
+          setPolls(res.data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error("Erro ao carregar polls:", err);
+          setError("Erro ao carregar enquetes");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPolls();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     // Listener para votos em realtime
     socket.on("updateVotes", (data) => {
       console.log("Votos atualizados:", data);
-      // Atualiza os votos da enquete específica
       loadPolls();
     });
 
     return () => socket.off("updateVotes");
-  }, []);
+  }, [loadPolls]);
 
   // Deletar enquete
   const handleDeletePoll = (pollId) => {

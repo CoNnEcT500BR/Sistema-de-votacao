@@ -185,6 +185,7 @@ function PollForm({ pollId, onSuccess, onCancel }) {
 
     request
       .then(() => {
+        console.log("Enquete salva com sucesso!");
         setSubmitted(false);
         onSuccess?.();
       })
