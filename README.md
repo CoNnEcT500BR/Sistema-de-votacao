@@ -102,8 +102,8 @@ root/
 │   │   ├── init-db.js           # Inicializar BD
 │   │   ├── reset-db.js          # Resetar BD
 │   │   ├── seed-db.js           # Popular BD
-│   │   ├── GUIDE.md             # Guia de Instalação
-│   │   └── README.md            # Documentação
+│   │   └── README.md            # Guia completo de scripts e Documentação
+│   │ 
 │   ├── app.js                   # Servidor Express
 │   ├── package.json
 │   └── .env                     # Variáveis de ambiente
@@ -127,7 +127,7 @@ root/
 │   │   │   └── PollForm.module.css
 │   │   └── 📂 utils/
 │   │       └── dateUtils.js
-│   ├── .env.local               # Env para testes
+│   ├── .env                     # Env para testes
 │   ├── .env.production          # Env para produção
 │   ├── index.html
 │   ├── package.json

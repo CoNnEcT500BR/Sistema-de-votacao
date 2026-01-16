@@ -26,7 +26,7 @@ Você vai:
 
 ### 🔧 **Quero customizar** (1+ hora)
 
-👉 Leia: **[backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md)**
+👉 Leia: **[backend/scripts/README.md](./backend/scripts/README.md)**
 
 Você vai:
 
@@ -54,7 +54,7 @@ Você vai:
 | [README.md](./README.md)                                 | Quem quer visão geral     | 20 min |
 | [README.md - Exemplos de Requisições](./README.md#-exemplos-de-requisições) | Quem quer testar a API | 10 min |
 | [backend/scripts/README.md](./backend/scripts/README.md) | Quem quer usar scripts    | 15 min |
-| [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md)   | Quem quer dominar scripts | 1 hora |
+| [backend/scripts/README.md](./backend/scripts/README.md) | Guia completo | 1 hora |
 
 ---
 
@@ -84,8 +84,7 @@ Você vai:
       ├─ 📄 init-db.js        ← Script de inicialização
       ├─ 📄 reset-db.js       ← Script de reset
       ├─ 📄 seed-db.js        ← Script de população
-      ├─ 📄 README.md         ← Documentação detalhada
-      └─ 📄 GUIDE.md          ← Guia avançado
+      └─ 📄 README.md         ← Documentação completa
 ```
 
 ---
@@ -108,11 +107,11 @@ Você vai:
 ### "Como resetar o banco?"
 
 👉 [DATABASE-SETUP.md](./DATABASE-SETUP.md) - Seção "Scripts npm"  
-👉 [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md) - Seção "Descrição Detalhada"
+👉 [backend/scripts/README.md](./backend/scripts/README.md) - Seção "Troubleshooting"
 
 ### "Como mudar dados de teste?"
 
-👉 [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md) - Seção "Customização"
+👉 [backend/scripts/README.md](./backend/scripts/README.md) - Seção "FAQ"
 
 ### "Quais são os códigos de erro da API?"
 
@@ -133,7 +132,7 @@ Você vai:
 ### "Deu erro, o que fazer?"
 
 👉 [SETUP.md](./SETUP.md) - Seção "Troubleshooting"  
-👉 [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md) - Seção "Troubleshooting"
+👉 [backend/scripts/README.md](./backend/scripts/README.md) - Seção "Troubleshooting"
 
 ---
 
@@ -153,7 +152,7 @@ Você vai:
 
 ### ✅ "Quero customizar os dados de teste"
 
-1. Ler: [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md)
+1. Ler: [backend/scripts/README.md](./backend/scripts/README.md)
 2. Editar: `backend/scripts/seed-db.js`
 3. Rodar: `npm run seed:db`
 
@@ -203,14 +202,13 @@ npm run seed:db     # Adicionar novos
 
 ## 🔗 Links Principais
 
-| Recurso       | Link                                                     |
-| ------------- | -------------------------------------------------------- |
-| Quick Start   | [QUICK-START.md](./QUICK-START.md)                       |
-| Configuração  | [SETUP.md](./SETUP.md)                                   |
-| Documentação  | [README.md](./README.md)                                 |
-| Scripts       | [backend/scripts/README.md](./backend/scripts/README.md) |
-| Guia Avançado | [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md)   |
-| Mapa Visual   | [SYSTEM-MAP.md](./SYSTEM-MAP.md)                         |
+| Recurso      | Link                                                     |
+| ------------ | -------------------------------------------------------- |
+| Quick Start  | [QUICK-START.md](./QUICK-START.md)                       |
+| Configuração | [SETUP.md](./SETUP.md)                                   |
+| Documentação | [README.md](./README.md)                                 |
+| Scripts      | [backend/scripts/README.md](./backend/scripts/README.md) |
+| Mapa Visual  | [SYSTEM-MAP.md](./SYSTEM-MAP.md)                         |
 
 ---
 
@@ -227,13 +225,13 @@ npm run seed:db     # Adicionar novos
 1. Leia [README.md](./README.md)
 2. Leia [SETUP.md](./SETUP.md)
 3. Explore o código
-4. Leia [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md)
+4. Leia [backend/scripts/README.md](./backend/scripts/README.md)
 
 ### Se você **tem problemas**:
 
 1. Procure em [Troubleshooting](./SETUP.md#-troubleshooting)
 2. Procure em [SYSTEM-MAP.md](./SYSTEM-MAP.md)
-3. Leia [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md#-troubleshooting)
+3. Leia [backend/scripts/README.md](./backend/scripts/README.md#-troubleshooting)
 
 ---
 
@@ -248,4 +246,4 @@ npm run seed:db     # Adicionar novos
 | DATABASE-SETUP.md         | Resumo do sistema     | Referência rápida   |
 | SYSTEM-MAP.md             | Diagrama visual       | Referência visual   |
 | backend/scripts/README.md | Docs dos scripts      | Usar scripts        |
-| backend/scripts/GUIDE.md  | Guia avançado         | Customizar          |
+| backend/scripts/README.md  | Docs e guia completo  | Usar e customizar   |

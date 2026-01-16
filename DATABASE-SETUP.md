@@ -159,8 +159,7 @@ Para mais detalhes, consulte:
 
 - **`SETUP.md`** - Guia completo de configuração
 - **`README.md`** - Documentação do projeto
-- **`backend/scripts/README.md`** - Documentação dos scripts
-- **`backend/scripts/GUIDE.md`** - Guia detalhado de uso
+- **`backend/scripts/README.md`** - Documentação dos scripts e Guia
 
 ---
 

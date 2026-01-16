@@ -270,7 +270,7 @@ DETALHADO (30 minutos)
 └─ backend/scripts/README.md
 
 AVANÇADO (1 hora+)
-├─ backend/scripts/GUIDE.md
+├─ backend/scripts/README.md
 ├─ Código dos scripts
 └─ Documentação do projeto
 
@@ -315,7 +315,7 @@ SEMPRE CONSULTAR
 - [SETUP.md](./SETUP.md) - Instruções completas
 - [README.md](./README.md) - Documentação do projeto
 - [backend/scripts/README.md](./backend/scripts/README.md) - Scripts detalhados
-- [backend/scripts/GUIDE.md](./backend/scripts/GUIDE.md) - Guia avançado
+- [backend/scripts/README.md](./backend/scripts/README.md) - Guia completo de scripts
 
 ---
 

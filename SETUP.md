@@ -156,14 +156,14 @@ Em outro terminal:
 
 ```bash
 # Na pasta frontend/
-touch .env.local
+touch .env
 # Ou no Windows:
-type nul > .env.local
+type nul > .env
 ```
 
 Adicione o seguinte conteúdo (adapte as credenciais):
 
-```env.local
+```env
 VITE_API_URL=http://localhost:5000
 VITE_API_SOCKET_URL=http://localhost:5000
 ```
@@ -337,7 +337,7 @@ sistema-votacao/
 │   │   ├── init-db.js    # Inicializar
 │   │   ├── reset-db.js   # Resetar
 │   │   ├── seed-db.js    # Popular
-│   │   ├── GUIDE.md      # Guia
+│   │   ├── README.md     # Guia completo
 │   │   └── README.md     # Documentação
 │   ├── config/
 │   │   └── database.js   # Configuração MySQL
@@ -384,7 +384,7 @@ Para confirmar que tudo está funcionando:
 
 ### Frontend:
 
-- [ ] Arquivo `.env.local` está configurado
+- [ ] Arquivo `.env` está configurado
 - [ ] `npm run dev` inicia sem erros
 - [ ] Navegador abre `http://localhost:5173`
 - [ ] Página carrega sem erros no console

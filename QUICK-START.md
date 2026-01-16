@@ -99,8 +99,7 @@ Se der problema:
 
 - **SETUP.md** - Guia completo de configuração passo-a-passo
 - **README.md** - Documentação completa do projeto
-- **backend/scripts/README.md** - Documentação detalhada dos scripts
-- **backend/scripts/GUIDE.md** - Guia avançado de uso
+- **backend/scripts/README.md** - Documentação detalhada dos scripts e Guia
 
 ---
 
