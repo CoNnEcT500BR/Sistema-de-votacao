@@ -70,12 +70,16 @@ npm run setup:db
 # 4. Iniciar servidor
 npm start
 
-# Em outro terminal - Frontend
+# 5. Configurar .env do frontend com a localização do servidor
+# VITE_API_URL=http://localhost:5000
+# VITE_API_SOCKET_URL=http://localhost:5000
+
+# 6. Em outro terminal - Frontend
 cd frontend
 npm install
 npm run dev
 
-# 5. Abrir navegador
+# 7. Abrir navegador
 # http://localhost:5173
 ```
 
