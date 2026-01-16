@@ -69,6 +69,15 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Listener para atualizações de enquetes
+    socket.on("pollsUpdated", () => {
+      loadPolls();
+    });
+
+    return () => socket.off("pollsUpdated");
+  }, [loadPolls]);
+
+  useEffect(() => {
     // Listener para votos em realtime
     socket.on("updateVotes", (data) => {
       console.log("Votos atualizados:", data);

@@ -113,6 +113,9 @@ app.post("/api/polls", async (req, res) => {
     await Promise.all(optionPromises);
 
     const pollWithOptions = await Poll.findByPk(poll.id, { include: Option });
+
+    io.emit("pollsUpdated");
+
     res
       .status(201)
       .json({ message: "Enquete criada com sucesso", poll: pollWithOptions });
