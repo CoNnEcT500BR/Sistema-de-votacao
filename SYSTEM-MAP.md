@@ -1,33 +1,152 @@
-# 📊 Mapa Visual do Sistema de Gerenciamento de Banco de Dados
+# 📊 Mapa Visual do Sistema de Votação
+
+## 🏗️ Arquitetura Refatorada
+
+### Backend - Estrutura de Camadas
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   app.js (Entrada)                  │
+│           Express + Socket.io + CORS                │
+└────────────┬─────────────────────────────────────┬──┘
+             │                                     │
+      ┌──────▼──────┐                      ┌──────▼──────┐
+      │   Routes    │                      │  Handlers   │
+      │ (polls.js)  │                      │ (Socket.io) │
+      │ HTTP APIs   │                      │ Real-time   │
+      └──────┬──────┘                      └──────┬──────┘
+             │                                     │
+      ┌──────▼──────────────────────────────────────▼──────┐
+      │            Modelos (Models)                        │
+      │  Poll.js | Option.js | Vote.js                   │
+      │         (Sequelize ORM)                           │
+      └──────────────────┬───────────────────────────────┘
+                         │
+      ┌──────────────────▼───────────────────────────────┐
+      │        Banco de Dados (MySQL)                   │
+      │  polls | options | votes                         │
+      └────────────────────────────────────────────────┘
+```
+
+### Frontend - Estrutura de Componentes
+
+```
+┌─────────────────────────────────────────────────┐
+│           App.jsx (Componente Raiz)             │
+└────────┬────────────────────────┬──────────────┘
+         │                        │
+    ┌────▼────┐          ┌────────▼────┐
+    │PollList │          │ PollDetail  │
+    │         │          │             │
+    │Listar   │          │Votar        │
+    │enquetes │          │Resultados   │
+    └────┬────┘          └────┬────────┘
+         │                    │
+         │              ┌─────▼──────┐
+         │              │ PollForm   │
+         │              │            │
+         │              │Criar/Editar│
+         │              └────────────┘
+         │
+    ┌────▼────────────────────────────┐
+    │       Hook: usePollsData        │
+    │  Gerencia estado das enquetes  │
+    └────┬───────────────────────────┘
+         │
+    ┌────▼──────────────────────────────┐
+    │   Utils: pollAPI + socketClient   │
+    │ Comunicação com Backend            │
+    └───────────────────────────────────┘
+```
+
+---
 
 ## 🔄 Fluxo de Execução
 
 ### Ao rodar `npm run setup:db`
 
 ```
-┌─────────────────────────────────┐
-│  npm run setup:db               │
-├─────────────────────────────────┤
-│ Executa: init:db + seed:db      │
-└──────────────┬──────────────────┘
-               ↓
-    ┌──────────────────────┐
-    │   npm run init:db    │
-    │   ├─ Conecta MySQL   │
-    │   ├─ Cria banco      │
-    │   ├─ Cria tabelas    │
-    │   └─ Define relações │
-    └──────────┬───────────┘
-               ↓
-    ┌──────────────────────┐
-    │   npm run seed:db    │
-    │   ├─ Conecta banco   │
-    │   ├─ Limpa dados     │
-    │   ├─ Cria enquetes   │
-    │   └─ Adiciona votos  │
-    └──────────┬───────────┘
-               ↓
-        ✅ Banco pronto!
+┌─────────────────────────────────────────┐
+│  npm run setup:db                       │
+│  (Backend - inicializar + popular)      │
+└────────────────┬──────────────────────┘
+                 │
+                 ├─→ npm run init:db
+                 │   ├─ config/database.js (conectar)
+                 │   ├─ models/ (definir esquema)
+                 │   ├─ utils/database.js (inicializar)
+                 │   └─ ✅ Estrutura criada
+                 │
+                 ├─→ npm run seed:db
+                 │   ├─ scripts/seed-db.js
+                 │   ├─ Criar 3 enquetes
+                 │   ├─ Adicionar opções
+                 │   ├─ Adicionar votos
+                 │   └─ ✅ Dados populados
+                 │
+                 └─→ ✅ Banco pronto para usar!
+```
+
+### Ao rodar `npm start` (Backend)
+
+```
+┌──────────────────────┐
+│   npm start          │
+│  (Backend server)    │
+└─────────┬────────────┘
+          │
+    ┌─────▼──────────┐
+    │ app.js inicia  │
+    │ - Express      │
+    │ - Socket.io    │
+    └─────┬──────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ Configurações carregadas   │
+    │ - config/database.js       │
+    │ - models/                  │
+    │ - routes/polls.js          │
+    │ - handlers/socketHandlers  │
+    └─────┬──────────────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ utils/database.js          │
+    │ Sincronizar com banco      │
+    └─────┬──────────────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ Servidor na porta 5000 ✅  │
+    │ Socket.io pronto ✅        │
+    └────────────────────────────┘
+```
+
+### Ao rodar `npm run dev` (Frontend)
+
+```
+┌──────────────────────┐
+│   npm run dev        │
+│  (Frontend - Vite)   │
+└─────────┬────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ Vite inicia na porta 5173   │
+    └─────┬──────────────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ src/main.jsx carregado      │
+    │ React 19.2.0 inicializado   │
+    └─────┬──────────────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ App.jsx renderizado         │
+    │ Conexão Socket.io           │
+    │ usePollsData hook           │
+    └─────┬──────────────────────┘
+          │
+    ┌─────▼──────────────────────┐
+    │ Aplicação pronta! ✅        │
+    │ http://localhost:5173       │
+    └────────────────────────────┘
 ```
 
 ---
@@ -61,25 +180,31 @@ DATABASE: voting_system
 │
 ├─ TABLE: polls
 │  ├─ id (Integer, Primary Key)
-│  ├─ title (String)
+│  ├─ title (String, NOT NULL)
 │  ├─ description (String)
 │  ├─ startDate (DateTime)
 │  ├─ endDate (DateTime)
-│  ├─ createdAt (DateTime)
-│  └─ updatedAt (DateTime)
+│  ├─ createdAt (DateTime, auto)
+│  └─ updatedAt (DateTime, auto)
 │
 ├─ TABLE: options
 │  ├─ id (Integer, Primary Key)
-│  ├─ text (String)
-│  ├─ pollId (Integer, Foreign Key)
-│  ├─ createdAt (DateTime)
-│  └─ updatedAt (DateTime)
+│  ├─ text (String, NOT NULL)
+│  ├─ pollId (Integer, Foreign Key → polls.id)
+│  ├─ createdAt (DateTime, auto)
+│  └─ updatedAt (DateTime, auto)
 │
 └─ TABLE: votes
    ├─ id (Integer, Primary Key)
-   ├─ optionId (Integer, Foreign Key)
-   ├─ createdAt (DateTime)
-   └─ updatedAt (DateTime)
+   ├─ optionId (Integer, Foreign Key → options.id)
+   ├─ createdAt (DateTime, auto)
+   └─ updatedAt (DateTime, auto)
+
+Relacionamentos:
+  Poll.hasMany(Option, onDelete: CASCADE)
+  Option.belongsTo(Poll)
+  Option.hasMany(Vote, onDelete: CASCADE)
+  Vote.belongsTo(Option)
 ```
 
 ---
@@ -102,6 +227,39 @@ FINISHED (Finalizada)
 ├─ Você vê a enquete
 ├─ Você NÃO pode votar ❌
 └─ Você VÊ os resultados ✅
+```
+
+---
+
+## 🔄 Fluxo de Votação em Tempo Real
+
+```
+┌─────────────┐
+│  Cliente    │         ┌──────────────┐
+│ (Browser)   │────────→│   Backend    │
+│             │         │ (Express)    │
+└─────────────┘         └──────┬───────┘
+      ↑                        │
+      │                   ┌────▼──────────────┐
+      │                   │ routes/polls.js   │
+      │                   │ POST /polls/:id/  │
+      │                   │      vote         │
+      │                   └────┬──────────────┘
+      │                        │
+      │                   ┌────▼──────────────┐
+      │                   │ models/Vote.js    │
+      │                   │ Salvar voto no BD │
+      │                   └────┬──────────────┘
+      │                        │
+      │                   ┌────▼──────────────┐
+      │                   │ handlers/socket   │
+      │                   │ Broadcast para    │
+      │                   │ todos os clientes │
+      │                   └────┬──────────────┘
+      │                        │
+      └────────────────────────┘
+         Socket.io emit
+       (atualização em tempo real)
 ```
 
 ---
@@ -161,7 +319,7 @@ Opções:
   - Python
   - Java
   - C / C++
-Status: Votação ativa
+Status: Votação ativa (dentro do período)
 ```
 
 Enquete 2: **Não Iniciada** ⏳
@@ -173,7 +331,7 @@ Opções:
   - macOS
   - Linux
   - Outro
-Status: Não pode votar ainda
+Status: Não pode votar ainda (antes da data início)
 ```
 
 Enquete 3: **Finalizada** ✓
@@ -185,7 +343,7 @@ Opções com votos:
   - Vue.js: 7 votos ✓
   - Angular: 5 votos ✓
   - Svelte: 3 votos ✓
-Status: Mostra resultados apenas
+Status: Mostra resultados apenas (passou da data fim)
 ```
 
 ---
@@ -201,23 +359,25 @@ Status: Mostra resultados apenas
 
 2. CONFIGURAR
    ├─ Editar backend/.env
-   └─ Definir credenciais MySQL
+   ├─ Definir credenciais MySQL
+   └─ (Frontend usa example.env como template)
 
 3. INICIALIZAR BANCO
    ├─ cd backend
    └─ npm run setup:db
 
 4. INICIAR SERVIDORES
-   ├─ npm start (backend, terminal 1)
-   ├─ npm run dev (frontend, terminal 2)
-   └─ Abrir http://localhost:5173
+   ├─ Terminal 1: npm start (backend, porta 5000)
+   ├─ Terminal 2: npm run dev (frontend, porta 5173)
+   └─ Abrir http://localhost:5173 no navegador
 
 5. USAR APLICAÇÃO
-   ├─ Ver enquetes
-   ├─ Criar nova enquete
-   ├─ Votar
-   ├─ Ver resultados
-   └─ Editar/Deletar
+   ├─ Ver enquetes (GET /api/polls)
+   ├─ Criar nova enquete (POST /api/polls)
+   ├─ Votar (POST /api/polls/:id/vote)
+   ├─ Ver resultados (GET /api/polls/:id/results)
+   ├─ Editar enquete (PUT /api/polls/:id)
+   └─ Deletar enquete (DELETE /api/polls/:id)
 
 6. QUANDO PRECISAR RESETAR
    ├─ npm run reset:db
@@ -252,50 +412,109 @@ Dados desaparecem
 └─→ npm run reset:db foi executado
     └─→ Executar npm run seed:db
     └─→ (dados não recuperáveis)
+
+Frontend não carrega
+└─→ Backend não está rodando
+    └─→ Abrir outro terminal
+    └─→ cd backend && npm start
+
+Votação não funciona em tempo real
+└─→ Socket.io desconectado
+    └─→ Verificar utils/socketClient.js
+    └─→ Verificar handlers/socketHandlers.js
 ```
 
 ---
 
-## 📚 Documentação por Tipo
+## 📚 Estrutura de Arquivos Backend
 
 ```
-RÁPIDO (5 minutos)
-├─ QUICK-START.md
-├─ DATABASE-SETUP.md
-└─ Este arquivo (QUICK-START.md)
-
-DETALHADO (30 minutos)
-├─ SETUP.md
-├─ README.md
-└─ backend/scripts/README.md
-
-AVANÇADO (1 hora+)
-├─ backend/scripts/README.md
-├─ Código dos scripts
-└─ Documentação do projeto
-
-SEMPRE CONSULTAR
-└─ Este arquivo para referência rápida!
+backend/
+├── app.js                           # Entrada principal
+│   ├─ Carrega Express + Socket.io
+│   ├─ Importa routes e handlers
+│   └─ Inicia servidor na porta 5000
+│
+├── config/
+│   └─ database.js                   # Config Sequelize
+│
+├── models/
+│   ├─ Poll.js                       # Modelo enquete
+│   ├─ Option.js                     # Modelo opção
+│   └─ Vote.js                       # Modelo voto
+│
+├── routes/
+│   └─ polls.js                      # API REST endpoints
+│       ├─ GET /api/polls
+│       ├─ POST /api/polls
+│       ├─ PUT /api/polls/:id
+│       ├─ DELETE /api/polls/:id
+│       └─ POST /api/polls/:id/vote
+│
+├── handlers/
+│   └─ socketHandlers.js             # WebSocket listeners
+│       ├─ connection
+│       ├─ disconnect
+│       └─ custom events
+│
+├── utils/
+│   ├─ database.js                   # Helper database
+│   │   └─ initializeDatabaseIfNeeded()
+│   └─ pollUtils.js                  # Helper polls
+│
+├── scripts/
+│   ├─ init-db.js                    # Inicializar DB
+│   ├─ reset-db.js                   # Resetar DB
+│   ├─ seed-db.js                    # Popular DB
+│   └─ check-db.js                   # Verificar DB
+│
+├── package.json
+├── .env
+└── .gitignore
 ```
 
 ---
 
-## ✅ Checklist de Setup
+## 📚 Estrutura de Arquivos Frontend
 
-- [ ] MySQL instalado e rodando
-- [ ] Node.js 18+ instalado
-- [ ] npm install executado (backend)
-- [ ] npm install executado (frontend)
-- [ ] .env configurado com credenciais
-- [ ] npm run setup:db executado com sucesso
-- [ ] npm start rodando (backend)
-- [ ] npm run dev rodando (frontend)
-- [ ] Navegador abrindo http://localhost:5173
-- [ ] Consegue criar enquete
-- [ ] Consegue votar
-- [ ] Resultados aparecem em tempo real
-
-✅ **Se todos os itens estão OK, está funcionando!**
+```
+frontend/
+├── src/
+│   ├── App.jsx                      # Componente raiz
+│   ├── main.jsx                     # Entrada React
+│   │
+│   ├── components/
+│   │   ├─ PollList.jsx              # Listar enquetes
+│   │   ├─ PollDetail.jsx            # Detalhes/votação
+│   │   ├─ PollForm.jsx              # Criar/editar
+│   │   └─ ConfirmationModal.jsx     # Modal confirmação
+│   │
+│   ├── hooks/
+│   │   └─ usePollsData.js           # Hook customizado
+│   │
+│   ├── utils/
+│   │   ├─ pollAPI.js                # Chamadas HTTP
+│   │   └─ socketClient.js           # Setup WebSocket
+│   │
+│   ├── styles/
+│   │   ├─ global.css
+│   │   ├─ App.module.css
+│   │   ├─ PollList.module.css
+│   │   ├─ PollDetail.module.css
+│   │   ├─ PollForm.module.css
+│   │   └─ ConfirmationModal.module.css
+│   │
+│   └── assets/
+│
+├── public/
+├── index.html                       # HTML principal
+├── vite.config.js                   # Config Vite
+├── eslint.config.js                 # Config ESLint
+├── package.json
+├── example.env                      # Template .env
+├── .env                             # Variáveis
+└── .gitignore
+```
 
 ---
 
@@ -315,7 +534,6 @@ SEMPRE CONSULTAR
 - [SETUP.md](./SETUP.md) - Instruções completas
 - [README.md](./README.md) - Documentação do projeto
 - [backend/scripts/README.md](./backend/scripts/README.md) - Scripts detalhados
-- [backend/scripts/README.md](./backend/scripts/README.md) - Guia completo de scripts
 
 ---
 

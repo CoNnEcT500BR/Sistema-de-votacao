@@ -9,7 +9,6 @@ const Poll = require("./models/Poll");
 const Option = require("./models/Option");
 const Vote = require("./models/Vote");
 
-// Imports dos modules refatorados
 const { initializeDatabaseIfNeeded } = require("./utils/database");
 const setupPollRoutes = require("./routes/polls");
 const setupSocketHandlers = require("./handlers/socketHandlers");

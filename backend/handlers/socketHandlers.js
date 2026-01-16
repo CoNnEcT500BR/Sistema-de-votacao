@@ -11,7 +11,6 @@ module.exports = function setupSocketHandlers(io) {
       console.log("Usuário desconectado:", socket.id);
     });
 
-    // Listener para quando um cliente requisita os dados iniciais
     socket.on("getPollUpdates", async () => {
       const polls = await Poll.findAll({
         include: Option,

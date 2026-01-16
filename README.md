@@ -97,41 +97,53 @@ root/
 │   │   ├── Poll.js              # Modelo de enquete
 │   │   ├── Option.js            # Modelo de opção
 │   │   └── Vote.js              # Modelo de voto
+│   ├── 📂 routes/
+│   │   └── polls.js             # Rotas das enquetes (GET, POST, PUT, DELETE)
+│   ├── 📂 handlers/
+│   │   └── socketHandlers.js    # Handlers de WebSocket em tempo real
+│   ├── 📂 utils/
+│   │   ├── database.js          # Utilitários de banco de dados
+│   │   └── pollUtils.js         # Funções auxiliares de enquete
 │   ├── 📂 scripts/              # Scripts utilitários
-│   │   ├── check-db.js          # Verifica o BD
 │   │   ├── init-db.js           # Inicializar BD
 │   │   ├── reset-db.js          # Resetar BD
 │   │   ├── seed-db.js           # Popular BD
-│   │   └── README.md            # Guia completo de scripts e Documentação
+│   │   ├── check-db.js          # Verifica o BD
+│   │   └── README.md            # Guia completo de scripts
 │   │ 
-│   ├── app.js                   # Servidor Express
+│   ├── app.js                   # Servidor Express com Socket.io
 │   ├── package.json
 │   └── .env                     # Variáveis de ambiente
 │
 ├── 🎨 frontend/
-│   ├── 📂 assets/
 │   ├── 📂 public/
-│   │   ├── Favicon.svg
 │   ├── 📂 src/
 │   │   ├── App.jsx              # Componente principal
 │   │   ├── main.jsx
+│   │   ├── 📂 assets/
 │   │   ├── 📂 components/
 │   │   │   ├── PollList.jsx     # Lista de enquetes
 │   │   │   ├── PollDetail.jsx   # Detalhes e votação
-│   │   │   └── PollForm.jsx     # Criar/editar enquete
+│   │   │   ├── PollForm.jsx     # Criar/editar enquete
+│   │   │   └── ConfirmationModal.jsx  # Modal de confirmação
+│   │   ├── 📂 hooks/
+│   │   │   └── usePollsData.js  # Hook customizado para dados
 │   │   ├── 📂 styles/
 │   │   │   ├── global.css
 │   │   │   ├── App.module.css
 │   │   │   ├── PollList.module.css
 │   │   │   ├── PollDetail.module.css
-│   │   │   └── PollForm.module.css
+│   │   │   ├── PollForm.module.css
+│   │   │   └── ConfirmationModal.module.css
 │   │   └── 📂 utils/
-│   │       └── dateUtils.js
-│   ├── .env                     # Env para testes
-│   ├── .env.production          # Env para produção
+│   │       ├── pollAPI.js       # Funções da API
+│   │       └── socketClient.js  # Configuração WebSocket
 │   ├── index.html
 │   ├── package.json
-│   └── vite.config.js
+│   ├── vite.config.js
+│   ├── eslint.config.js
+│   ├── example.env              # Template de variáveis
+│   └── .env                     # Variáveis de ambiente
 │
 ├── SETUP.md                     # Guia de configuração
 ├── README.md                    # Este arquivo
