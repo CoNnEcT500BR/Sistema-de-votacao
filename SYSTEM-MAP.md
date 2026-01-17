@@ -190,6 +190,7 @@ DATABASE: voting_system
 ├─ TABLE: options
 │  ├─ id (Integer, Primary Key)
 │  ├─ text (String, NOT NULL)
+│  ├─ order (Integer, NOT NULL, Default: 0)
 │  ├─ pollId (Integer, Foreign Key → polls.id)
 │  ├─ createdAt (DateTime, auto)
 │  └─ updatedAt (DateTime, auto)
@@ -228,6 +229,94 @@ FINISHED (Finalizada)
 ├─ Você NÃO pode votar ❌
 └─ Você VÊ os resultados ✅
 ```
+
+---
+
+## ✏️ Fluxo de Edição com Preservação de Dados
+
+```
+┌─────────────────────────────────────────────────┐
+│     Usuário clica "Editar" em uma enquete      │
+└────────────────────┬────────────────────────────┘
+                     │
+            ┌────────▼─────────┐
+            │ Frontend carrega  │
+            │ Poll e options    │
+            └────────┬──────────┘
+                     │
+         ┌───────────▼──────────────┐
+         │   Usuário edita...       │
+         ├─ Muda apenas a data     │
+         ├─ Reordena as opções    │
+         ├─ Renomeia opção        │
+         └───────────┬──────────────┘
+                     │
+          ┌──────────▼────────────┐
+          │ Frontend envia PUT    │
+          │ /api/polls/:id       │
+          │ com opções atualizadas│
+          └──────────┬────────────┘
+                     │
+     ┌───────────────▼────────────────┐
+     │    Backend processa...         │
+     │ 1. Obtém opções antigas        │
+     │ 2. Compara pelo TEXTO          │
+     └───────────┬────────────────────┘
+                 │
+    ┌────────────▼─────────────────────┐
+    │  Para cada opção nova:           │
+    ├────────────────────────────────┤
+    │ Se texto EXISTE no banco        │
+    │  └─ ATUALIZA (votos preservados)│
+    │  └─ Atualiza campo 'order'      │
+    │                                 │
+    │ Se texto é NOVO                 │
+    │  └─ CRIA nova opção             │
+    │  └─ Votos começam em 0          │
+    │                                 │
+    │ Se texto foi REMOVIDO           │
+    │  └─ DELETA opção                │
+    │  └─ Votos também são deletados  │
+    └────────────┬────────────────────┘
+                 │
+      ┌──────────▼─────────┐
+      │ Retorna opções     │
+      │ ORDENADAS por      │
+      │ campo 'order'      │
+      └────────┬───────────┘
+               │
+    ┌──────────▼──────────────┐
+    │  Frontend renderiza     │
+    │  na nova ordem          │
+    │  com votos preservados  │
+    └─────────────────────────┘
+```
+
+**Exemplo Prático:**
+
+```
+ESTADO ANTERIOR (no banco):
+  Option 1: text: "Python",    order: 0, Votes: 3
+  Option 2: text: "JavaScript", order: 1, Votes: 5
+  Option 3: text: "Java",      order: 2, Votes: 2
+
+USUÁRIO EDITA E REORDENA:
+  "JavaScript"  ← Posição 1
+  "Java"        ← Posição 2
+  "Python"      ← Posição 3
+  "C++"         ← Nova opção
+
+RESULTADO NO BANCO:
+  Option 2: text: "JavaScript", order: 0, Votes: 5 ✅ (preservado!)
+  Option 3: text: "Java",       order: 1, Votes: 2 ✅ (preservado!)
+  Option 1: text: "Python",     order: 2, Votes: 3 ✅ (preservado!)
+  Option 4: text: "C++",        order: 3, Votes: 0 (novo!)
+```
+
+**⭐ Resumo:**
+- ✅ Votos SEMPRE seguem o **texto** da opção
+- ✅ Campo **`order`** garante a ordenação visual
+- ✅ Apenas **renomear** perde votos (opção antiga é deletada)
 
 ---
 

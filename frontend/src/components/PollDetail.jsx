@@ -165,6 +165,7 @@ function PollDetail({ pollId, onBack, socket }) {
                   className={`${styles.optionCard} ${
                     !isActive ? styles.disabled : ""
                   }`}
+                  onClick={() => isActive && handleVote(option.id)}
                 >
                   <div className={styles.optionContent}>
                     <label className={styles.optionLabel}>
@@ -174,6 +175,7 @@ function PollDetail({ pollId, onBack, socket }) {
                         value={option.id}
                         onChange={() => handleVote(option.id)}
                         disabled={!isActive}
+                        onClick={(e) => e.stopPropagation()}
                       />
                       <span>{option.text}</span>
                     </label>

@@ -11,7 +11,7 @@ module.exports = function setupPollRoutes(app, io) {
       const polls = await Poll.findAll({
         include: Option,
         raw: false,
-        order: [["id", "DESC"]],
+        order: [["id", "DESC"], [Option, "order", "ASC"]],
       });
       res.json(polls);
     } catch (err) {
@@ -40,13 +40,16 @@ module.exports = function setupPollRoutes(app, io) {
       // Cria poll
       const poll = await Poll.create({ title, startDate, endDate });
 
-      // Cria opções associadas
-      const optionPromises = options.map((opt) =>
-        Option.create({ text: opt, PollId: poll.id })
+      // Cria opções associadas com ordem
+      const optionPromises = options.map((opt, index) =>
+        Option.create({ text: opt, PollId: poll.id, order: index })
       );
       await Promise.all(optionPromises);
 
-      const pollWithOptions = await Poll.findByPk(poll.id, { include: Option });
+      const pollWithOptions = await Poll.findByPk(poll.id, { 
+        include: Option,
+        order: [[Option, "order", "ASC"]],
+      });
 
       io.emit("pollsUpdated");
 
@@ -63,7 +66,10 @@ module.exports = function setupPollRoutes(app, io) {
   app.get("/api/polls/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const poll = await Poll.findByPk(id, { include: Option });
+      const poll = await Poll.findByPk(id, { 
+        include: Option,
+        order: [[Option, "order", "ASC"]],
+      });
 
       if (!poll) {
         return res.status(404).json({ message: "Enquete não encontrada" });
@@ -100,32 +106,36 @@ module.exports = function setupPollRoutes(app, io) {
 
       // Atualizar opções se fornecidas E forem válidas
       if (options && Array.isArray(options) && options.length >= 3) {
-        // Validar que todas as opções têm texto não vazio
-        const validOptions = options.map((opt) => opt.trim()).filter((opt) => opt);
+        // Validar e limpar opções
+        const validOptions = options
+          .map((opt) => (typeof opt === 'string' ? opt : opt.text))
+          .map((text) => text.trim())
+          .filter((text) => text);
         
         if (validOptions.length >= 3) {
-          // Obter opções antigas para comparação
+          // Obter opções atuais
           const oldOptions = await Option.findAll({ where: { PollId: id } });
-          
-          // Atualizar opções existentes (preserva votos)
-          for (let i = 0; i < Math.min(validOptions.length, oldOptions.length); i++) {
-            await oldOptions[i].update({ text: validOptions[i] });
+          const oldOptionTexts = new Set(oldOptions.map((opt) => opt.text));
+          const newOptionTexts = new Set(validOptions);
+
+          // Deletar opções que foram removidas
+          for (const oldOption of oldOptions) {
+            if (!newOptionTexts.has(oldOption.text)) {
+              await oldOption.destroy();
+            }
           }
 
-          // Se há mais opções novas que antigas, criar as adicionais
-          if (validOptions.length > oldOptions.length) {
-            const newOptionsToCreate = validOptions.slice(oldOptions.length);
-            const optionPromises = newOptionsToCreate.map((opt) =>
-              Option.create({ text: opt, PollId: id })
-            );
-            await Promise.all(optionPromises);
-          }
-
-          // Se há menos opções novas que antigas, deletar apenas as extras
-          if (validOptions.length < oldOptions.length) {
-            const optionsToDelete = oldOptions.slice(validOptions.length);
-            const deletePromises = optionsToDelete.map((opt) => opt.destroy());
-            await Promise.all(deletePromises);
+          // Criar novas opções ou atualizar existentes, mantendo a ordem
+          for (let index = 0; index < validOptions.length; index++) {
+            const newText = validOptions[index];
+            const existingOption = oldOptions.find((opt) => opt.text === newText);
+            if (!existingOption) {
+              // Criar nova opção com a ordem especificada
+              await Option.create({ text: newText, PollId: id, order: index });
+            } else {
+              // Atualizar a ordem da opção existente
+              await existingOption.update({ order: index });
+            }
           }
         } else {
           return res
@@ -135,7 +145,10 @@ module.exports = function setupPollRoutes(app, io) {
       }
 
       await poll.save();
-      const pollWithOptions = await Poll.findByPk(id, { include: Option });
+      const pollWithOptions = await Poll.findByPk(id, { 
+        include: Option,
+        order: [[Option, "order", "ASC"]],
+      });
 
       // Emitir evento de atualização via WebSocket
       io.emit("pollsUpdated");

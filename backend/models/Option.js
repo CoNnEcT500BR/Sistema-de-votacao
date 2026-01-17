@@ -5,6 +5,7 @@ const Option = sequelize.define(
   "Option",
   {
     text: { type: DataTypes.TEXT, allowNull: false },
+    order: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   },
   {
     timestamps: false,

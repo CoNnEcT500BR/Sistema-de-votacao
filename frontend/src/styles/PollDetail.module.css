@@ -128,6 +128,10 @@
   cursor: pointer;
   transition: var(--transition);
   background-color: var(--surface);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .optionCard:hover:not(.disabled) {
@@ -164,6 +168,10 @@
   color: var(--text-primary);
   flex: 1;
   font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .optionLabel input[type="radio"] {

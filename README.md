@@ -9,7 +9,8 @@
 - ✅ **Gerenciar Enquetes** - Editar e deletar enquetes facilmente
 - ✅ **Filtrar por Status** - Não iniciada, Em andamento, Finalizada
 - ✅ **Contar Votos** - Visualizar número de votos ao lado de cada opção
-- ✅ **Reordenar Opções** - Drag-and-drop para reorganizar opções
+- ✅ **Reordenar Opções** - Drag-and-drop para reorganizar opções sem perder votos
+- ✅ **Preservar Dados ao Editar** - Votos e datas são mantidos ao editar
 - ✅ **Suporte Unicode** - Emojis e caracteres especiais funcionam perfeitamente
 
 ### 🎨 Design
@@ -284,6 +285,86 @@ const data = await response.json();
 
 ---
 
+### PUT /api/polls/:id - Atualizar enquete PRESERVA VOTOS
+
+**Requisição (Reordenar Opções):**
+```bash
+curl -X PUT http://localhost:5000/api/polls/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Qual é sua linguagem de programação favorita?",
+    "startDate": "2026-01-15T12:00:00Z",
+    "endDate": "2026-01-22T12:00:00Z",
+    "options": [
+      "Python",
+      "JavaScript / TypeScript",
+      "Java",
+      "C / C++"
+    ]
+  }'
+```
+
+**Requisição em JavaScript (Reordenar):**
+```javascript
+const response = await fetch('http://localhost:5000/api/polls/1', {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    title: 'Qual é sua linguagem de programação favorita?',
+    startDate: '2026-01-15T12:00:00Z',
+    endDate: '2026-01-22T12:00:00Z',
+    options: [
+      'Python',                    // Mudou de posição (order: 0)
+      'JavaScript / TypeScript',   // Mudou de posição (order: 1)
+      'Java',                      // Novidade (order: 2)
+      'C / C++'                    // Mantém (order: 3)
+    ]
+  })
+});
+const data = await response.json();
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "Enquete atualizada com sucesso",
+  "poll": {
+    "id": 1,
+    "title": "Qual é sua linguagem de programação favorita?",
+    "startDate": "2026-01-15T12:00:00.000Z",
+    "endDate": "2026-01-22T12:00:00.000Z",
+    "Options": [
+      {
+        "id": 2,
+        "text": "Python",
+        "order": 0,
+        "PollId": 1
+      },
+      {
+        "id": 1,
+        "text": "JavaScript / TypeScript",
+        "order": 1,
+        "PollId": 1
+      },
+      {
+        "id": 3,
+        "text": "Java",
+        "order": 2,
+        "PollId": 1
+      },
+      {
+        "id": 4,
+        "text": "C / C++",
+        "order": 3,
+        "PollId": 1
+      }
+    ]
+  }
+}
+```
+
+---
+
 ### GET /api/polls/:id - Obter detalhes de uma enquete
 
 **Requisição:**
@@ -404,6 +485,29 @@ curl -X GET http://localhost:5000/api/polls/1/results
 ```json
 {
   "message": "Título, datas e mínimo 3 opções são obrigatórios"
+}
+```
+
+```json
+{
+  "message": "Data de início deve ser anterior à de término"
+}
+```
+
+### PUT /api/polls/:id - Atualizar Enquete ⭐
+
+| Campo | Tipo | Obrigatório | Regras | Observação |
+|-------|------|-------------|--------|-----------|
+| `title` | String | ❌ Não | Se informado, não pode estar vazio | Pode ser omitido |
+| `startDate` | ISO 8601 | ❌ Não | Se informado, deve ser válido | Pode ser omitido |
+| `endDate` | ISO 8601 | ❌ Não | Se informado, deve ser posterior a `startDate` | Pode ser omitido |
+| `options` | Array | ❌ Não | Se informado, mínimo 3 opções válidas | **Votos preservados pelo texto!** |
+
+**Erros Possíveis:**
+
+```json
+{
+  "message": "Mínimo de 3 opções válidas e preenchidas é obrigatório"
 }
 ```
 
@@ -550,6 +654,82 @@ Executa init + seed automaticamente (recomendado para primeira vez).
 | Desktop    | > 1200px       | Monitores, Laptops |
 | Tablet     | 768px - 1200px | iPads, Tablets     |
 | Mobile     | < 768px        | Smartphones        |
+
+---
+
+## ✏️ Edição de Enquetes - Preservação de Dados
+
+### Como Funciona a Edição
+
+Quando você **edita uma enquete**, o sistema preserva inteligentemente:
+
+- ✅ **Votos das opções** - Mantém os votos associados ao texto da opção
+- ✅ **Ordem das opções** - Preserva a ordem que você define (salva no banco com campo `order`)
+- ✅ **Datas** - Pode alterar datas sem perder votos
+- ✅ **Título** - Pode renomear a enquete sem afetar votos
+
+### Exemplos Práticos
+
+#### Cenário 1: Reordenar Opções
+
+```
+ANTES:                      DEPOIS (após editar):
+1. Python (3 votos)   →     1. Java (2 votos)
+2. Java (2 votos)     →     2. Python (3 votos)
+3. JavaScript (5)     →     3. JavaScript (5)
+```
+
+✅ **Resultado:** Os votos seguem o texto da opção, não a posição!
+
+#### Cenário 2: Alterar Data
+
+```
+ANTES:                              DEPOIS (após editar):
+Título: Favoritas (5 votos total)   Título: Favoritas (5 votos total)
+Data: 17/01 - 24/01                 Data: 17/01 - 31/01
+Python: 3 votos              →      Python: 3 votos
+Java: 2 votos                       Java: 2 votos
+```
+
+✅ **Resultado:** Votos intactos, apenas data alterada!
+
+#### Cenário 3: Renomear Opção
+
+```
+ANTES:                      DEPOIS (após editar):
+Python: 3 votos      →      Python 3.12: 0 votos
+```
+
+✅ **Resultado:** A opção antiga é deletada e uma nova é criada com o mesmo número de votos? **NÃO!**
+
+❌ **Importante:** Se você renomear uma opção, ela é considerada "nova" e começa com 0 votos. A opção antiga é deletada com seus votos.
+
+**Para manter votos, preserve o texto da opção!**
+
+### Como o Backend Preserva os Dados
+
+```javascript
+// Ao editar uma enquete (PUT /api/polls/:id)
+// 1. Identifica opções pelo TEXTO (não pelo ID)
+// 2. Para cada opção:
+//    ├─ Se o texto existe no banco → atualiza (votos preservados)
+//    ├─ Se é novo → cria (0 votos)
+//    └─ Se foi removido → deleta (votos também são deletados)
+// 3. Atualiza o campo 'order' para preservar a ordem
+```
+
+### Campo `order` no Banco de Dados
+
+```
+TABLE: options
+├─ id: Integer (Primary Key)
+├─ text: String (identifica a opção)
+├─ order: Integer (preserva a ordem)
+├─ pollId: Integer (Foreign Key)
+└─ ...timestamps
+```
+
+O campo `order` garante que as opções sempre apareçam na ordem que você definiu, independentemente de quantas edições você fizer.
 
 ---
 
