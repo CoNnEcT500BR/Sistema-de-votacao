@@ -200,22 +200,16 @@ curl -X GET http://localhost:5000/api/polls
     "description": null,
     "startDate": "2026-01-15T12:00:00.000Z",
     "endDate": "2026-01-22T12:00:00.000Z",
-    "createdAt": "2026-01-16T10:30:00.000Z",
-    "updatedAt": "2026-01-16T10:30:00.000Z",
     "Options": [
       {
         "id": 1,
         "text": "JavaScript / TypeScript",
-        "PollId": 1,
-        "createdAt": "2026-01-16T10:30:00.000Z",
-        "updatedAt": "2026-01-16T10:30:00.000Z"
+        "PollId": 1
       },
       {
         "id": 2,
         "text": "Python",
-        "PollId": 1,
-        "createdAt": "2026-01-16T10:30:00.000Z",
-        "updatedAt": "2026-01-16T10:30:00.000Z"
+        "PollId": 1
       }
     ]
   }
@@ -267,29 +261,21 @@ const data = await response.json();
     "description": null,
     "startDate": "2026-01-17T10:00:00.000Z",
     "endDate": "2026-01-24T10:00:00.000Z",
-    "createdAt": "2026-01-16T11:45:00.000Z",
-    "updatedAt": "2026-01-16T11:45:00.000Z",
     "Options": [
       {
         "id": 10,
         "text": "JavaScript",
-        "PollId": 4,
-        "createdAt": "2026-01-16T11:45:00.000Z",
-        "updatedAt": "2026-01-16T11:45:00.000Z"
+        "PollId": 4
       },
       {
         "id": 11,
         "text": "Python",
-        "PollId": 4,
-        "createdAt": "2026-01-16T11:45:00.000Z",
-        "updatedAt": "2026-01-16T11:45:00.000Z"
+        "PollId": 4
       },
       {
         "id": 12,
         "text": "Java",
-        "PollId": 4,
-        "createdAt": "2026-01-16T11:45:00.000Z",
-        "updatedAt": "2026-01-16T11:45:00.000Z"
+        "PollId": 4
       }
     ]
   }
@@ -313,15 +299,11 @@ curl -X GET http://localhost:5000/api/polls/1
   "description": null,
   "startDate": "2026-01-15T12:00:00.000Z",
   "endDate": "2026-01-22T12:00:00.000Z",
-  "createdAt": "2026-01-16T10:30:00.000Z",
-  "updatedAt": "2026-01-16T10:30:00.000Z",
   "Options": [
     {
       "id": 1,
       "text": "JavaScript / TypeScript",
-      "PollId": 1,
-      "createdAt": "2026-01-16T10:30:00.000Z",
-      "updatedAt": "2026-01-16T10:30:00.000Z"
+      "PollId": 1
     }
   ]
 }
@@ -362,9 +344,7 @@ curl -X POST http://localhost:5000/api/polls/1/vote \
   "message": "Voto registrado com sucesso",
   "vote": {
     "id": 25,
-    "OptionId": 1,
-    "createdAt": "2026-01-16T11:50:00.000Z",
-    "updatedAt": "2026-01-16T11:50:00.000Z"
+    "OptionId": 1
   }
 }
 ```
@@ -387,8 +367,6 @@ curl -X GET http://localhost:5000/api/polls/1/results
     "description": null,
     "startDate": "2026-01-15T12:00:00.000Z",
     "endDate": "2026-01-22T12:00:00.000Z",
-    "createdAt": "2026-01-16T10:30:00.000Z",
-    "updatedAt": "2026-01-16T10:30:00.000Z",
     "Options": [...]
   },
   "results": {
@@ -485,9 +463,7 @@ curl -X GET http://localhost:5000/api/polls/1/results
   title: String,
   description: String,
   startDate: DateTime,
-  endDate: DateTime,
-  createdAt: DateTime,
-  updatedAt: DateTime
+  endDate: DateTime
 }
 ```
 
@@ -497,9 +473,7 @@ curl -X GET http://localhost:5000/api/polls/1/results
 {
   id: Integer (Primary Key),
   text: String,
-  pollId: Integer (Foreign Key),
-  createdAt: DateTime,
-  updatedAt: DateTime
+  pollId: Integer (Foreign Key)
 }
 ```
 
@@ -508,9 +482,7 @@ curl -X GET http://localhost:5000/api/polls/1/results
 ```javascript
 {
   id: Integer (Primary Key),
-  optionId: Integer (Foreign Key),
-  createdAt: DateTime,
-  updatedAt: DateTime
+  optionId: Integer (Foreign Key)
 }
 ```
 
