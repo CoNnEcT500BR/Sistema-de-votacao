@@ -114,8 +114,7 @@ root/
 │   │   ├── check-db.js          # Verifica o BD
 │   │   └── README.md            # Guia completo de scripts
 │   ├── 📂 utils/
-│   │   ├── database.js          # Utilitários de banco de dados
-│   │   └── pollUtils.js         # Funções auxiliares de enquete
+│   │   └── database.js          # Utilitários de banco de dados
 │   │
 │   ├── app.js                   # Servidor Express com Socket.io
 │   ├── package.json
