@@ -7,6 +7,7 @@ const Option = sequelize.define(
   {
     text: { type: DataTypes.TEXT, allowNull: false },
     order: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    pollId: { type: DataTypes.INTEGER, allowNull: false },
   },
   {
     timestamps: false,

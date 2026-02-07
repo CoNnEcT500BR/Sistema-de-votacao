@@ -5,11 +5,8 @@ const sequelize = require("../config/database");
 const Vote = sequelize.define(
   "vote",
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    optionId: { type: DataTypes.INTEGER, allowNull: false },
   },
   {
     timestamps: false,

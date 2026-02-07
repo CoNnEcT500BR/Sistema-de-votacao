@@ -6,11 +6,9 @@
  */
 
 require("dotenv").config();
+require("../models");
 const mysql = require("mysql2/promise");
 const sequelize = require("../config/database");
-const Poll = require("../models/Poll");
-const Option = require("../models/Option");
-const Vote = require("../models/Vote");
 
 async function initializeDatabase() {
   console.log("🔧 Iniciando preparação do banco de dados...\n");
@@ -47,10 +45,6 @@ async function initializeDatabase() {
 
     // 3. Definir associações
     console.log("🔗 Definindo associações entre modelos...");
-    Option.belongsTo(Poll);
-    Poll.hasMany(Option, { onDelete: "CASCADE" });
-    Vote.belongsTo(Option);
-    Option.hasMany(Vote, { onDelete: "CASCADE" });
     console.log("✓ Associações definidas com sucesso\n");
 
     // 4. Sincronizar tabelas
